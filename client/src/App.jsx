@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 
 // --- CONFIGURATION ---
-const API_BASE = 'http://localhost:5000'; 
+const API_BASE = 'https://videodownload-6cl0.onrender.com'; 
 
 // --- MOCK DATA (Demo ke liye) ---
 const DEMO_DATA = {
