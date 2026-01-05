@@ -198,23 +198,49 @@ export default function App() {
 
   const toggleTheme = () => setDarkMode(!darkMode);
 
-  const handleFetch = async (e) => {
+   const handleFetch = async (e) => {
     e.preventDefault();
     if (!url) return;
+    
     setStatus('loading');
     setErrorMsg('');
     setVideoData(null);
 
-    // Using Demo Data for UI Showcase
     try {
-        if (url || true) { 
-            setTimeout(() => {
-                setVideoData(DEMO_DATA);
-                setStatus('success');
-            }, 1500);
-        }
+      // REAL API CALL - No more '|| true' demo hack
+      const res = await fetch(`${API_BASE}/api/info`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      
+      const data = await res.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch video info");
+      }
+      
+      setVideoData(data.data);
+      setStatus('success');
     } catch (err) {
-        setStatus('error');
+      console.error("Fetch Error:", err);
+      setStatus('error');
+      setErrorMsg(err.message || "Connection error. Check if Backend is awake.");
+      
+      // Only show demo if user types 'demo' explicitly
+      if (url.toLowerCase() === 'demo') {
+          setVideoData({
+              title: "DEMO: Rockstar Games GTA VI Trailer",
+              thumbnail: "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000",
+              duration: "01:31",
+              author: "Rockstar",
+              platform: "YouTube",
+              views: "190M",
+              qualities: [{ label: '1080p', size: '150MB', type: 'MP4', badge: 'HD' }]
+          });
+          setStatus('success');
+          setErrorMsg('');
+      }
     }
   };
 
